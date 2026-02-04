@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đồng Hồ Đếm Ngược</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .timer-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .timer-display {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        
+        .time-digits {
+            font-size: 5rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+            line-height: 1;
+        }
+        
+        .warning {
+            color: #ff5252 !important;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+        
+        .timer-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s;
+        }
+        
+        .timer-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .timer-btn:active {
+            transform: translateY(0);
+        }
+        
+        .timer-btn.start {
+            background: #4CAF50;
+        }
+        
+        .timer-btn.pause {
+            background: #FF9800;
+        }
+        
+        .timer-btn.reset {
+            background: #f44336;
+        }
+        
+        .timer-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .time-adjustment {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .adjustment-title {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .adjustment-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .adjust-group {
+            text-align: center;
+        }
+        
+        .adjust-group > div:first-child {
+            color: white;
+            margin-bottom: 8px;
+        }
+        
+        .adjust-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .adjust-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .adjust-value {
+            font-size: 1.2rem;
+            color: white;
+            min-width: 50px;
+            font-weight: bold;
+        }
+        
+        .warning-message {
+            background: #ff5252;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .modal-content h2 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+        
+        .modal-content p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+        }
+        
+        .modal-btn {
+            background: white;
+            color: #f44336;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 600px) {
+            .time-digits {
+                font-size: 3.5rem;
+            }
+            
+            .timer-container {
+                padding: 20px;
+            }
+            
+            .timer-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .timer-btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="timer-container">
+            <h1><i class="fas fa-hourglass-half"></i> Đồng Hồ Đếm Ngược</h1>
+            
+            <div class="timer-display">
+                <div id="time-digits" class="time-digits">10:00</div>
+            </div>
+            
+            <div id="warning-message" class="warning-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                CẢNH BÁO: Dưới 1 phút!
+            </div>
+            
+            <div class="timer-controls">
+                <button id="start-btn" class="timer-btn start">
+                    <i class="fas fa-play"></i> Bắt đầu
+                </button>
+                <button id="pause-btn" class="timer-btn pause" disabled>
+                    <i class="fas fa-pause"></i> Tạm dừng
+                </button>
+                <button id="reset-btn" class="timer-btn reset">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </button>
+            </div>
+            
+            <div class="time-adjustment">
+                <div class="adjustment-title">Điều chỉnh thời gian</div>
+                <div class="adjustment-controls">
+                    <div class="adjust-group">
+                        <div>Phút</div>
+                        <div class="adjust-buttons">
+                            <button class="adjust-btn" id="decrease-minutes">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <div id="minutes-value" class="adjust-value">10</div>
+                            <button class="adjust-btn" id="increase-minutes">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="adjust-group">
+                        <div>Giây</div>
+                        <div class="adjust-buttons">
+                            <button class="adjust-btn" id="decrease-seconds">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <div id="seconds-value" class="adjust-value">00</div>
+                            <button class="adjust-btn" id="increase-seconds">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal hết giờ -->
+    <div id="timeup-modal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-hourglass-end"></i> HẾT GIỜ!</h2>
+            <p>Đồng hồ đếm ngược đã kết thúc.</p>
+            <button id="close-modal" class="modal-btn">
+                <i class="fas fa-check"></i> Đóng
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Biến toàn cục
+        let timerInterval = null;
+        let totalSeconds = 600; // 10 phút
+        let initialSeconds = 600;
+        let isRunning = false;
+        let isPaused = false;
+        
+        // Lấy các phần tử DOM
+        const timeDigits = document.getElementById('time-digits');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const warningMessage = document.getElementById('warning-message');
+        const timeupModal = document.getElementById('timeup-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const minutesValue = document.getElementById('minutes-value');
+        const secondsValue = document.getElementById('seconds-value');
+        const decreaseMinutesBtn = document.getElementById('decrease-minutes');
+        const increaseMinutesBtn = document.getElementById('increase-minutes');
+        const decreaseSecondsBtn = document.getElementById('decrease-seconds');
+        const increaseSecondsBtn = document.getElementById('increase-seconds');
+        
+        // Định dạng thời gian
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        // Cập nhật hiển thị
+        function updateDisplay() {
+            timeDigits.textContent = formatTime(totalSeconds);
+            
+            // Cảnh báo khi dưới 1 phút
+            if (totalSeconds <= 60 && totalSeconds > 0) {
+                timeDigits.classList.add('warning');
+                warningMessage.style.display = 'flex';
+            } else {
+                timeDigits.classList.remove('warning');
+                warningMessage.style.display = 'none';
+            }
+        }
+        
+        // Dọn dẹp interval
+        function clearTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        // Bắt đầu đếm ngược
+        function startTimer() {
+            if (isRunning || totalSeconds <= 0) return;
+            
+            clearTimer();
+            isRunning = true;
+            isPaused = false;
+            
+            // Cập nhật trạng thái nút
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+            
+            // Bắt đầu interval
+            timerInterval = setInterval(() => {
+                totalSeconds--;
+                
+                if (totalSeconds <= 0) {
+                    totalSeconds = 0;
+                    stopTimer();
+                    showTimeUpModal();
+                }
+                
+                updateDisplay();
+            }, 1000);
+        }
+        
+        // Tạm dừng
+        function pauseTimer() {
+            if (!isRunning || isPaused) return;
+            
+            clearTimer();
+            isPaused = true;
+            isRunning = false;
+            
+            // Cập nhật trạng thái nút
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Tiếp tục';
+        }
+        
+        // Dừng hẳn
+        function stopTimer() {
+            clearTimer();
+            isRunning = false;
+            isPaused = false;
+            
+            // Cập nhật trạng thái nút
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Bắt đầu';
+        }
+        
+        // Đặt lại
+        function resetTimer() {
+            clearTimer();
+            totalSeconds = initialSeconds;
+            isRunning = false;
+            isPaused = false;
+            
+            // Cập nhật trạng thái nút
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            startBtn.innerHTML = '<i class="fas fa-play"></i> Bắt đầu';
+            
+            // Cập nhật hiển thị
+            updateDisplay();
+            timeDigits.classList.remove('warning');
+            warningMessage.style.display = 'none';
+        }
+        
+        // Cập nhật thời gian từ điều chỉnh
+        function updateTimeFromControls() {
+            const minutes = parseInt(minutesValue.textContent);
+            const seconds = parseInt(secondsValue.textContent);
+            initialSeconds = (minutes * 60) + seconds;
+            
+            if (!isRunning) {
+                totalSeconds = initialSeconds;
+                updateDisplay();
+            }
+        }
+        
+        // Điều chỉnh thời gian
+        function adjustTime(element, delta) {
+            let value = parseInt(element.textContent);
+            if (element === minutesValue) {
+                value = Math.max(0, Math.min(99, value + delta));
+            } else {
+                value = Math.max(0, Math.min(59, value + delta));
+            }
+            element.textContent = value.toString().padStart(2, '0');
+            updateTimeFromControls();
+        }
+        
+        // Hiển thị modal hết giờ
+        function showTimeUpModal() {
+            timeupModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Đóng modal
+        function closeTimeUpModal() {
+            timeupModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+            resetTimer();
+        }
+        
+        // Khi trang được tải
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hiển thị thời gian ban đầu
+            updateDisplay();
+            
+            // Sự kiện cho các nút
+            startBtn.addEventListener('click', startTimer);
+            pauseBtn.addEventListener('click', pauseTimer);
+            resetBtn.addEventListener('click', resetTimer);
+            
+            // Sự kiện điều chỉnh thời gian
+            decreaseMinutesBtn.addEventListener('click', () => adjustTime(minutesValue, -1));
+            increaseMinutesBtn.addEventListener('click', () => adjustTime(minutesValue, 1));
+            decreaseSecondsBtn.addEventListener('click', () => adjustTime(secondsValue, -10));
+            increaseSecondsBtn.addEventListener('click', () => adjustTime(secondsValue, 10));
+            
+            // Sự kiện modal
+            closeModalBtn.addEventListener('click', closeTimeUpModal);
+            timeupModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeTimeUpModal();
+                }
+            });
+            
+            // Phím tắt
+            document.addEventListener('keydown', function(e) {
+                if (e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    if (isRunning && !isPaused) {
+                        pauseTimer();
+                    } else {
+                        startTimer();
+                    }
+                }
+                
+                if (e.key === 'r' && e.ctrlKey) {
+                    e.preventDefault();
+                    resetTimer();
+                }
+                
+                if (e.key === 'Escape') {
+                    closeTimeUpModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

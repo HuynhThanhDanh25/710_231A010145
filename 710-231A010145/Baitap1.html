@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách sản phẩm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+            padding: 15px 0;
+        }
+        
+        .navbar {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .search-box input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+        
+        .search-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-image {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 20px;
+        }
+        
+        .product-category {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .product-name {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .product-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #e53935;
+        }
+        
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .product-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        footer {
+            background: #333;
+            color: white;
+            margin-top: 50px;
+            padding: 30px 0;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            padding: 0 20px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #444;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">Cửa hàng sản phẩm</a>
+                <ul class="nav-menu">
+                    <li><a href="#" class="nav-link active"><i class="fas fa-home"></i> Trang chủ</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-shopping-cart"></i> Sản phẩm</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-info-circle"></i> Giới thiệu</a></li>
+                    <li><a href="#" class="nav-link"><i class="fas fa-phone"></i> Liên hệ</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="search-section">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Nhập tên sản phẩm để tìm kiếm...">
+                <button id="search-btn" class="search-btn">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+                <button id="clear-btn" class="search-btn" style="background: #6c757d;">
+                    <i class="fas fa-times"></i> Xóa
+                </button>
+            </div>
+        </section>
+
+        <section id="products-section">
+            <h2><i class="fas fa-boxes"></i> Danh sách sản phẩm</h2>
+            <div id="products-grid" class="products-grid">
+                <!-- Sản phẩm sẽ được tạo bằng JavaScript -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Cửa hàng sản phẩm</h3>
+                <p>Chuyên cung cấp các sản phẩm công nghệ chất lượng</p>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết nhanh</h4>
+                <ul style="list-style: none;">
+                    <li><a href="#" style="color: white; text-decoration: none;">Trang chủ</a></li>
+                    <li><a href="#" style="color: white; text-decoration: none;">Sản phẩm</a></li>
+                    <li><a href="#" style="color: white; text-decoration: none;">Giới thiệu</a></li>
+                </ul>
+            </div>
+            <div class="footer-deploy">
+                <h4>Thông tin</h4>
+                <p>Địa chỉ: 123 Đường ABC, TP. HCM</p>
+                <p>Điện thoại: 0123 456 789</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 Cửa hàng sản phẩm. Tất cả các quyền được bảo lưu.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dữ liệu sản phẩm
+        const products = [
+            {
+                id: 1,
+                name: "Laptop Dell XPS 13",
+                price: "29,990,000 VNĐ",
+                category: "Máy tính",
+                description: "Laptop cao cấp với màn hình 13 inch, CPU Intel Core i7, RAM 16GB, SSD 512GB.",
+                image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 2,
+                name: "iPhone 14 Pro Max",
+                price: "32,990,000 VNĐ",
+                category: "Điện thoại",
+                description: "Điện thoại flagship của Apple với camera 48MP, chip A16 Bionic.",
+                image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 3,
+                name: "Tai nghe Sony WH-1000XM5",
+                price: "8,490,000 VNĐ",
+                category: "Phụ kiện",
+                description: "Tai nghe chống ồn tốt nhất với thời lượng pin 30 giờ, chất âm tuyệt hảo.",
+                image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 4,
+                name: "Apple Watch Series 8",
+                price: "12,990,000 VNĐ",
+                category: "Đồng hồ",
+                description: "Đồng hồ thông minh với tính năng đo nhiệt độ cơ thể, theo dõi sức khỏe.",
+                image: "https://images.unsplash.com/photo-1434493650001-5d43a6fea0c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 5,
+                name: "Máy ảnh Canon EOS R5",
+                price: "89,990,000 VNĐ",
+                category: "Máy ảnh",
+                description: "Máy ảnh mirrorless full-frame 45MP, quay video 8K, chụp liên tiếp 20fps.",
+                image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+            },
+            {
+                id: 6,
+                name: "Loa JBL Charge 5",
+                price: "4,290,000 VNĐ",
+                category: "Loa",
+                description: "Loa Bluetooth chống nước IP67 với âm bass mạnh mẽ, pin 20 giờ.",
+                image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+            }
+        ];
+
+        // Hiển thị sản phẩm
+        function displayProducts(productsToShow) {
+            const productsGrid = document.getElementById('products-grid');
+            productsGrid.innerHTML = '';
+            
+            productsToShow.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                productCard.innerHTML = `
+                    <div class="product-image">
+                        <img src="${product.image}" alt="${product.name}">
+                    </div>
+                    <div class="product-info">
+                        <span class="product-category">${product.category}</span>
+                        <h3 class="product-name">${product.name}</h3>
+                        <p>${product.description}</p>
+                        <div class="product-footer">
+                            <span class="product-price">${product.price}</span>
+                            <button class="product-btn" data-id="${product.id}">
+                                <i class="fas fa-eye"></i> Xem chi tiết
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                productsGrid.appendChild(productCard);
+            });
+        }
+
+        // Tìm kiếm sản phẩm
+        function searchProducts(searchTerm) {
+            const term = searchTerm.trim().toLowerCase();
+            
+            if (!term) {
+                displayProducts(products);
+                return;
+            }
+            
+            const filteredProducts = products.filter(product => {
+                return (
+                    product.name.toLowerCase().includes(term) ||
+                    product.category.toLowerCase().includes(term) ||
+                    product.description.toLowerCase().includes(term)
+                );
+            });
+            
+            displayProducts(filteredProducts);
+        }
+
+        // Khi trang được tải
+        document.addEventListener('DOMContentLoaded', function() {
+            displayProducts(products);
+            
+            document.getElementById('search-btn').addEventListener('click', () => {
+                const searchInput = document.getElementById('search-input');
+                searchProducts(searchInput.value);
+            });
+            
+            document.getElementById('clear-btn').addEventListener('click', () => {
+                document.getElementById('search-input').value = '';
+                displayProducts(products);
+            });
+            
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchProducts(this.value);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
